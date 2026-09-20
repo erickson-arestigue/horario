@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Mi horario semanal universitario y personal: clases, estudio, gimnasio, proyectos y descanso.">
+  <title>Mi horario semanal</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23275e50'/%3E%3Cpath d='M9 8v5m14-5v5M8 15h16M9 10h14v15H9z' stroke='white' fill='none' stroke-width='2'/%3E%3C/svg%3E">
+  <meta name="theme-color" content="#285d4e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Mi Horario">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="apple-touch-icon" href="./icons/icon-180.png">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./js/data.js" defer></script>
+  <script src="./js/storage.js" defer></script>
+  <script src="./js/calendar.js" defer></script>
+  <script src="./script.js" defer></script>
+</head>
+<body>
+  <main>
+    <header class="page-header">
+      <div class="brand"><span class="brand-icon" aria-hidden="true">▦</span><span>MI SEMANA<span class="brand-note">ESPACIO PERSONAL</span></span></div>
+      <span class="routine-label"><span></span> Rutina semanal</span>
+    </header>
+    <section class="intro" aria-labelledby="page-title">
+      <div><p class="eyebrow">UN POCO DE ORDEN, MÁS ESPACIO PARA TI</p><h1 id="page-title">MI HORARIO SEMANAL</h1><p class="subtitle">Universidad · Estudio · Gimnasio · Proyectos · Descanso</p></div>
+      <div class="focus-note"><span aria-hidden="true">✦</span><div><small>ENFOQUE DE LA SEMANA</small><strong>Estadística Aplicada</strong></div></div>
+    </section>
+    <section class="app-controls" aria-label="Herramientas del horario">
+      <label class="week-control" for="week-select">Semana <select id="week-select"></select></label>
+      <button type="button" class="primary" data-action="new" aria-label="+ Nueva actividad">+ Nueva actividad</button>
+      <button type="button" class="options-toggle" id="options-toggle" aria-expanded="false" aria-controls="options-menu">☰ Opciones</button>
+      <div class="options-menu" id="options-menu">
+        <button type="button" class="mobile-only" data-action="new">Nueva actividad</button>
+        <button type="button" class="mobile-only" data-action="week">Cambiar semana</button>
+        <button type="button" class="mobile-only" data-action="filters">Filtros</button>
+        <button type="button" data-action="export">Exportar horario</button>
+        <button type="button" data-action="import">Importar horario</button>
+        <button type="button" data-action="copy">Copiar datos</button>
+        <button type="button" data-action="paste">Pegar datos</button>
+        <button type="button" data-action="restore">Restaurar horario original</button>
+        <button type="button" data-action="settings">Configuración</button>
+      </div>
+      <input id="import-file" type="file" accept=".json,application/json" hidden>
+    </section>
+    <p id="save-status" class="save-status" role="status" aria-live="polite">Guardado en este dispositivo · Usa exportar para llevarlo a otro.</p>
+    <section class="schedule" aria-label="Calendario semanal">
+      <div class="calendar-toolbar"><div><span class="section-mark" aria-hidden="true">▦</span><strong>Una semana en equilibrio</strong><span class="time-range">06:00 — 00:00</span></div><span class="timezone">Hora local · <span id="clock">--:--</span></span></div>
+      <nav id="filters" class="filters" aria-label="Filtrar actividades"></nav>
+      <div class="mobile-navigation">
+        <nav id="mobile-tabs" aria-label="Seleccionar día"></nav>
+        <div class="day-navigation"><button type="button" id="previous-day" aria-label="Día anterior">←</button><h2 id="selected-day"></h2><button type="button" id="today-button">HOY</button><button type="button" id="next-day" aria-label="Día siguiente">→</button></div>
+      </div>
+      <div class="scroll-hint">Toca una actividad para editarla · Desliza entre días</div>
+      <div class="calendar-scroll" tabindex="0" aria-label="Horario desplazable de lunes a domingo">
+        <div class="calendar-inner"><div class="day-headers" id="day-headers"></div><div class="calendar-body"><div class="time-axis" id="time-axis"></div><div class="days" id="days"></div></div><div class="calendar-end"><span>00:00</span><div id="bedtimes"></div></div></div>
+      </div>
+      <div id="mobile-agenda" class="mobile-agenda" aria-label="Actividades del día"></div>
+      <div class="calendar-footer"><span><i class="now-key"></i> Hora actual</span><span>Selecciona un bloque para editarlo.</span></div>
+    </section>
+    <section class="legend-section" aria-label="Leyenda de colores"><span class="eyebrow">CADA COLOR, UNA ACTIVIDAD</span><div id="legend" class="legend"></div></section>
+    <section class="summary-section" aria-labelledby="summary-title"><div class="section-heading"><div><p class="eyebrow">TU TIEMPO, EN PERSPECTIVA</p><h2 id="summary-title">La semana en números</h2></div><p id="summary-week">Un resumen de tu rutina completa</p></div><div class="stats" id="stats"></div><div id="priority" class="priority"></div><p class="sleep-note" id="sleep-note"></p></section>
+    <footer class="page-footer"><span>Hecho para encontrar tu ritmo.</span><span>Universidad & vida personal <span aria-hidden="true">✦</span></span></footer>
+  </main>
+  <div id="tooltip" class="tooltip" role="tooltip" hidden></div>
+  <dialog id="event-dialog" aria-labelledby="event-dialog-title">
+    <form id="event-form">
+      <div class="dialog-heading"><h2 id="event-dialog-title">Editar actividad</h2><button type="button" class="icon-button" data-close="event-dialog" aria-label="Cerrar edición">×</button></div>
+      <p id="editing-week" class="form-hint"></p>
+      <label for="event-title">Nombre de la actividad</label><input id="event-title" name="title" required maxlength="160" autocomplete="off">
+      <label for="event-subtitle">Descripción / subtítulo</label><textarea id="event-subtitle" name="subtitle" rows="2" maxlength="500"></textarea>
+      <div class="form-grid"><div><label for="event-day">Día de inicio</label><select id="event-day" name="day"></select></div><div><label for="event-category">Categoría</label><select id="event-category" name="category"></select></div></div>
+      <div id="course-field"><label for="event-course">Curso (color y resumen)</label><select id="event-course" name="course"></select></div>
+      <div class="form-grid"><div><label for="event-start">Hora de inicio</label><input id="event-start" name="start" type="time" required></div><div><label for="event-end">Hora de finalización</label><input id="event-end" name="end" type="time" required></div></div>
+      <p class="form-hint">00:00 como final significa medianoche. En Dormir, una hora final menor al inicio indica el día siguiente.</p>
+      <div id="conflict-warning" class="conflict-warning" role="status" aria-live="polite" hidden></div>
+      <p id="event-error" class="form-error" role="alert"></p>
+      <div class="dialog-actions"><button type="button" id="delete-event" class="danger">Eliminar actividad</button><span class="spacer"></span><button type="button" data-close="event-dialog">Cancelar</button><button type="submit" class="primary">Guardar</button></div>
+    </form>
+  </dialog>
+  <dialog id="settings-dialog" aria-labelledby="settings-title"><form id="settings-form">
+    <div class="dialog-heading"><h2 id="settings-title">Configuración</h2><button type="button" class="icon-button" data-close="settings-dialog" aria-label="Cerrar configuración">×</button></div>
+    <p>Tu objetivo de sueño es una referencia. No modifica las actividades.</p>
+    <label for="sleep-start">Hora objetivo para dormir</label><input id="sleep-start" type="time" required>
+    <label for="sleep-end">Hora objetivo para despertar</label><input id="sleep-end" type="time" required>
+    <p id="sleep-target" class="form-hint"></p><p id="settings-error" class="form-error" role="alert"></p>
+    <div class="install-help"><h3>Instalar en tu celular</h3><p>Android: abre la versión HTTPS en Chrome → menú ⋮ → Agregar a pantalla principal / Instalar.</p><p>iPhone: abre la versión HTTPS en Safari → Compartir → Agregar a inicio. Activa «Abrir como app web» si aparece.</p><p id="offline-status">La instalación y el modo offline requieren HTTPS o localhost.</p><button type="button" id="install-button" hidden>Instalar aplicación</button><button type="button" id="update-button" hidden>Aplicar actualización</button></div>
+    <div class="dialog-actions"><button type="button" data-close="settings-dialog">Cancelar</button><button type="submit" class="primary">Guardar configuración</button></div>
+  </form></dialog>
+  <dialog id="transfer-dialog" aria-labelledby="transfer-title"><form id="transfer-form">
+    <div class="dialog-heading"><h2 id="transfer-title">Pegar datos</h2><button type="button" class="icon-button" data-close="transfer-dialog" aria-label="Cerrar transferencia">×</button></div>
+    <label for="transfer-json">JSON del horario</label><textarea id="transfer-json" rows="12" spellcheck="false" maxlength="2000000"></textarea><p id="transfer-error" class="form-error" role="alert"></p>
+    <div class="dialog-actions"><button type="button" data-close="transfer-dialog">Cancelar</button><button type="submit" id="transfer-submit" class="primary">Validar e importar</button></div>
+  </form></dialog>
+  <dialog id="confirm-dialog" aria-labelledby="confirm-title"><form method="dialog"><h2 id="confirm-title">Confirmar cambio</h2><p id="confirm-message"></p><div class="dialog-actions"><button value="cancel" autofocus>Cancelar</button><button value="confirm" class="primary" id="confirm-accept">Confirmar</button></div></form></dialog>
+  <noscript>Activa JavaScript para generar el horario y sus resúmenes.</noscript>
+</body>
+</html>
